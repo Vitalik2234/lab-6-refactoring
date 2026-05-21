@@ -1,27 +1,31 @@
-version: '3.9'
+name: CI Pipeline
 
-services:
-  app:
-    build: .
-    container_name: python_app
-    ports:
-      - "5000:5000"
-    environment:
-      - FLASK_ENV=development
-    volumes:
-      - .:/app
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
 
-  tests:
-    build: .
-    container_name: python_tests
-    command: pytest
+jobs:
+  build:
+    runs-on: ubuntu-latest
 
-  db:
-    image: postgres:15
-    container_name: postgres_db
-    environment:
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: admin
-      POSTGRES_DB: lab6db
-    ports:
-      - "5432:5432"
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Run tests
+      run: pytest
+
+    - name: Build Docker image
+      run: docker build -t lab6-app .

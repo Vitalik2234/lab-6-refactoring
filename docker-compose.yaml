@@ -15,3 +15,13 @@ services:
     build: .
     container_name: python_tests
     command: pytest
+
+  db:
+    image: postgres:15
+    container_name: postgres_db
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: lab6db
+    ports:
+      - "5432:5432"
